@@ -7,19 +7,19 @@ import ResultDisplay from './components/ResultDisplay';
 import UseCases from './components/UseCases';
 import { createRandomBouquetText } from './utils/localTextGen';
 import { getColorNameFromRGB } from './utils/textUtils';
-import { deleting_bg_on_Seg } from './utils/Deleting_bg_on_Seg.ts';
+import { applySegMask } from './utils/ApplySegMask';
 import type { SinglePrediction } from './components/ResultDisplay';
 
 function clamp255(n: number) {
   return Math.max(0, Math.min(255, Math.round(n)));
 }
 
-function rgbToHex(rgb: number[]): string {
+function RGBtoHex(rgb: number[]): string {
   const [r, g, b] = [clamp255(rgb[0] ?? 0), clamp255(rgb[1] ?? 0), clamp255(rgb[2] ?? 0)];
   return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 
-function hexToRgb(hex: string): number[] {
+function HEXtoRGB(hex: string): number[] {
   let h = hex.trim();
   if (h.startsWith('#')) h = h.slice(1);
   if (h.length !== 6) return [0, 0, 0];
@@ -34,43 +34,6 @@ function complementaryColorHex(my_hex: string): string {
   const b = 255 - parseInt(h.slice(4, 6), 16);
   const toHex = (x: number) => x.toString(16).toUpperCase().padStart(2, '0');
   return `${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-function applyWhiteBackgroundMask(
-    base64: string,
-    maskPoints: { x: number; y: number }[],
-    width: number,
-    height: number
-): Promise<string> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.save();
-      ctx.beginPath();
-      maskPoints.forEach((point, index) => {
-        if (index === 0) ctx.moveTo(point.x, point.y);
-        else ctx.lineTo(point.x, point.y);
-      });
-      ctx.closePath();
-      ctx.clip();
-
-      ctx.drawImage(img, 0, 0);
-      ctx.restore();
-
-      const finalBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
-      resolve(finalBase64);
-    };
-    img.src = `data:image/jpeg;base64,${base64}`;
-  });
 }
 
 function base64ToBlob(base64: string): Blob {
@@ -124,7 +87,7 @@ const App: React.FC = () => {
           const segData = segRes.data;
 
           if (Array.isArray(segData.instances) && segData.instances.length > 0) {
-            base64 = await deleting_bg_on_Seg(`data:image/jpeg;base64,${base64}`, segData);
+            base64 = await applySegMask(`data:image/jpeg;base64,${base64}`, segData);
             imageBase64WithPrefix = `data:image/jpeg;base64,${base64}`;
           }
         }
@@ -198,7 +161,7 @@ const App: React.FC = () => {
   const bouquetText = createRandomBouquetText(flowerClasses, flowerColorMap);
 
   const ColorSwatch: React.FC<{ rgb: number[]; label?: string; hexRight?: boolean }> = ({ rgb, label, hexRight }) => {
-    const hex = rgbToHex(rgb);
+    const hex = RGBtoHex(rgb);
     return (
         <div className="flex items-center gap-2">
           {label && <span className="text-sm">{label}</span>}
@@ -209,9 +172,9 @@ const App: React.FC = () => {
   };
 
   const renderAvgAndComplementary = (label: string, rgb: number[]) => {
-    const avgHex = rgbToHex(rgb);
+    const avgHex = RGBtoHex(rgb);
     const compHex = complementaryColorHex(avgHex);
-    const compRgb = hexToRgb(compHex);
+    const compRgb = HEXtoRGB(compHex);
     const avgName = getColorNameFromRGB(rgb);
     const compName = getColorNameFromRGB(compRgb);
     return (
@@ -230,9 +193,9 @@ const App: React.FC = () => {
   };
 
   const renderBouquetColorRow = (rgb: number[]) => {
-    const avgHex = rgbToHex(rgb);
+    const avgHex = RGBtoHex(rgb);
     const compHex = complementaryColorHex(avgHex);
-    const compRgb = hexToRgb(compHex);
+    const compRgb = HEXtoRGB(compHex);
     return (
         <div className="flex items-center gap-6">
           <ColorSwatch rgb={rgb} label="Bouquet Color" hexRight />
@@ -303,7 +266,7 @@ const App: React.FC = () => {
                         checked={fillMissing}
                         onChange={(e) => setFillMissing(e.target.checked)}
                     />
-                    Smart identification using my algorithm (Beta)
+                    Identification using my algorithm
                   </label>
                 </div>
                 <div>

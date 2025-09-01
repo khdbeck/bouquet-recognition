@@ -16,7 +16,7 @@ export type SegResponse = {
 };
 
 
-export function deleting_bg_on_Seg(
+export function applySegMask(
     base64WithPrefix: string,
     seg: SegResponse
 ): Promise<string> {
