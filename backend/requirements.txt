@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+torch
+ultralytics
+pillow
+opencv-python-headless
+numpy
+scipy
+matplotlib
