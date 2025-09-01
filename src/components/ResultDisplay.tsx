@@ -84,7 +84,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ image, predictions, isLoa
                           <ul className="space-y-1">
                             {groupedArray.map((item, i) => (
                                 <li key={i} className="text-sm text-gray-700">
-                                  🌸 <strong>{item.flower}</strong> – {item.count}x – {Math.round(item.avgConf * 100)}% confidence avg
+                                   <strong>{item.flower}</strong> – {item.count}x – {Math.round(item.avgConf * 100)}% confidence avg
                                 </li>
                             ))}
                           </ul>

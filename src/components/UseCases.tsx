@@ -44,13 +44,6 @@ const UseCases: React.FC = () => {
               ))}
             </ul>
           </div>
-
-          <div className="mt-12 text-center">
-            <h3 className="mb-3 text-xl font-semibold"></h3>
-            <p className="mb-6 text-gray-600">
-            </p>
-
-          </div>
         </div>
       </div>
   );

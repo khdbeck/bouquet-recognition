@@ -7,10 +7,9 @@ import ResultDisplay from './components/ResultDisplay';
 import UseCases from './components/UseCases';
 import { createRandomBouquetText } from './utils/localTextGen';
 import { getColorNameFromRGB } from './utils/textUtils';
-import { drawPolygonsOnCanvas } from './utils/drawPolygonsOnCanvas';
+import { deleting_bg_on_Seg } from './utils/Deleting_bg_on_Seg.ts';
 import type { SinglePrediction } from './components/ResultDisplay';
 
-/* ---------- Color helpers (adapted from your Python function) ---------- */
 function clamp255(n: number) {
   return Math.max(0, Math.min(255, Math.round(n)));
 }
@@ -36,7 +35,6 @@ function complementaryColorHex(my_hex: string): string {
   const toHex = (x: number) => x.toString(16).toUpperCase().padStart(2, '0');
   return `${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
-/* ---------------------------------------------------------------------- */
 
 function applyWhiteBackgroundMask(
     base64: string,
@@ -126,7 +124,7 @@ const App: React.FC = () => {
           const segData = segRes.data;
 
           if (Array.isArray(segData.instances) && segData.instances.length > 0) {
-            base64 = await drawPolygonsOnCanvas(`data:image/jpeg;base64,${base64}`, segData);
+            base64 = await deleting_bg_on_Seg(`data:image/jpeg;base64,${base64}`, segData);
             imageBase64WithPrefix = `data:image/jpeg;base64,${base64}`;
           }
         }
@@ -169,8 +167,8 @@ const App: React.FC = () => {
 
         setSelectedImage(imageBase64WithPrefix);
       } catch (err) {
-        console.error('❌ API error:', err);
-        setError('Something went wrong with the API.');
+        console.error('API error:', err);
+        setError('Something is wrong with the API.');
         setPredictions([]);
         setAvgColors({});
         setBouquetColor(null);
@@ -180,7 +178,7 @@ const App: React.FC = () => {
     };
 
     reader.onerror = () => {
-      setError('Error reading the file.');
+      setError('Error reading this file.');
       setIsAnalyzing(false);
     };
 
@@ -258,7 +256,7 @@ const App: React.FC = () => {
                       checked={mode === 'detect'}
                       onChange={() => setMode('detect')}
                   />
-                  Direct Classification
+                  Direct Detection
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -267,7 +265,7 @@ const App: React.FC = () => {
                       checked={mode === 'segment-then-detect'}
                       onChange={() => setMode('segment-then-detect')}
                   />
-                  Local Segmentation → Then Classify
+                  Segmentation → Detection
                 </label>
               </div>
 
@@ -315,7 +313,7 @@ const App: React.FC = () => {
                         checked={applyPrefilter}
                         onChange={(e) => setApplyPrefilter(e.target.checked)}
                     />
-                    Apply image prefilter (CLAHE + gamma)
+                    Image prefilter (CLAHE + Gamma correction)
                   </label>
                 </div>
               </div>
@@ -349,7 +347,7 @@ const App: React.FC = () => {
               {predictions.length > 0 && (
                   <div className="mt-6 p-4 rounded bg-green-50">
                     <h3 className="text-xl font-semibold text-green-600">
-                      🌸 {bouquetText.name}
+                       {bouquetText.name}
                     </h3>
                     <p className="mt-2 text-gray-700">{bouquetText.description}</p>
                   </div>

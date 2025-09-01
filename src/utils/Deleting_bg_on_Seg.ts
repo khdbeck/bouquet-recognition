@@ -1,13 +1,10 @@
-// drawPolygonsOnCanvas.ts
 export type RFPoint = { x: number; y: number };
 export type RFInstance = {
     class?: string;
     class_id?: number;
     confidence?: number;
     bbox_xyxy?: number[];
-    /** Either provide polygons (multiple rings) ... */
     polygons?: RFPoint[][];
-    /** ...or a single points ring */
     points?: RFPoint[];
 };
 
@@ -15,17 +12,11 @@ export type SegResponse = {
     width: number;
     height: number;
     instances: RFInstance[];
-    /** "normalized" means coordinates are in [0,1]; "absolute" are in pixels */
     meta?: { format?: "normalized" | "absolute" };
 };
 
-/**
- * Draws polygon masks on a white canvas, then draws the original image clipped to those polygons.
- * @param base64WithPrefix - e.g. "data:image/jpeg;base64,...."
- * @param seg - segmentation response
- * @returns base64 string WITHOUT the "data:image/..." prefix
- */
-export function drawPolygonsOnCanvas(
+
+export function deleting_bg_on_Seg(
     base64WithPrefix: string,
     seg: SegResponse
 ): Promise<string> {
@@ -37,7 +28,6 @@ export function drawPolygonsOnCanvas(
             const H = img.height;
 
             if (!seg || !Array.isArray(seg.instances) || seg.instances.length === 0) {
-                // return the original image data (without prefix) if no polygons
                 return resolve(base64WithPrefix.split(",")[1] || "");
             }
 
@@ -50,18 +40,15 @@ export function drawPolygonsOnCanvas(
             const ctx = canvas.getContext("2d");
             if (!ctx) return resolve(base64WithPrefix.split(",")[1] || "");
 
-            // white background
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, W, H);
 
-            // build a single path containing all rings (supports holes if provided separately)
             ctx.save();
             ctx.beginPath();
 
             let drewAnyPath = false;
 
             for (const inst of seg.instances) {
-                // normalize to an array of rings
                 const rings: RFPoint[][] | undefined = inst.polygons
                     ? inst.polygons
                     : inst.points
@@ -90,11 +77,9 @@ export function drawPolygonsOnCanvas(
             }
 
             if (drewAnyPath) {
-                // nonzero fill rule to keep overlapping shapes intuitive
                 ctx.clip("nonzero");
             }
 
-            // draw the original image within the clip
             ctx.drawImage(img, 0, 0, W, H);
             ctx.restore();
 

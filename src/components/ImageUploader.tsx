@@ -51,7 +51,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelect }) => {
             </div>
 
             <div className="mt-4 text-center text-xs text-gray-500 italic">
-                For best results, use a top-down image of the bouquet.
+                For the best results, use a top-down image.
             </div>
 
 

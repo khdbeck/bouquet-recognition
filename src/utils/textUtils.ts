@@ -65,7 +65,6 @@ export function getColorNameFromRGB(rgb: number[]): string {
         }
     }
 
-    // Fallback: find the closest color by Euclidean distance
     let minDist = Infinity;
     let closest = "unknown";
     for (const color of colorRanges) {

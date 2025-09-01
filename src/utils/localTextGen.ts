@@ -17,9 +17,7 @@ export function generateSingleFlowerText(flowerKey: string, colorName?: string):
 
     return `The ${synonym} symbolizes ${flowerMeaningStr}.${colorMeaningStr} ${entry.shortDesc}`;
 }
-/**
- * For a set of unique flowers, build a random bouquet name + description
- */
+
 export function createRandomBouquetText(
     flowers: string[],
     flowerColorMap?: Record<string, string>
@@ -29,7 +27,7 @@ export function createRandomBouquetText(
 } {
     if (flowers.length === 0) {
         return {
-            name: "Empty Bouquet",
+            name: "No Bouquet",
             description: "No flowers detected.",
         };
     }
