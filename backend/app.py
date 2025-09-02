@@ -24,16 +24,8 @@ MODEL = "YOLOv12l.pt"
 SEG_MODEL = "segment.pt"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 detection_model = YOLO(MODEL).to(device)
 segmentation_model = YOLO(SEG_MODEL).to(device)
-
-
-def verify_api_key(x_api_key: str = Header(None)):
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API")
-    return x_api_key
-
 
 def prefiltering(img: np.ndarray, gamma_val: float = 1.4) -> np.ndarray:
     try:
@@ -304,7 +296,6 @@ async def detect_flowers(
 @app.post("/segment/")
 async def segment_image_points_only(
     file: UploadFile = File(...),
-    x_api_key: str = Depends(verify_api_key),
     conf: float = 0.30,
     iou: float = 0.55,
     imgsz: int = 960,

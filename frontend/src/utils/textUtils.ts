@@ -37,20 +37,23 @@ const colorRanges: RGBRange[] = [
     { name: "lavender", r: [200, 240], g: [200, 240], b: [240, 255] },
     { name: "burgundy", r: [80, 140], g: [0, 50], b: [30, 70] },
 ];
+
+// https://www.teleflora.com/floral-facts/flower-color-meaning
 export const colorMeanings: Record<string, string[]> = {
     red: ["love", "passion"],
-    pink: ["affection", "grace"],
-    white: ["purity", "peace"],
-    yellow: ["joy", "friendship"],
-    orange: ["warmth", "energy"],
-    purple: ["royalty", "mystery"],
-    blue: ["trust", "tranquility"],
-    green: ["harmony", "renewal"],
+    pink: ["grace", "admiration"],
+    white: ["purity", "innocence"],
+    yellow: ["friendship", "joy"],
+    orange: ["enthusiasm", "energy"],
+    purple: ["royalty", "admiration"],
+    blue: ["peace", "openness"],
+    green: ["renewal", "optimism"],
     peach: ["gratitude", "sincerity"],
-    lavender: ["serenity", "elegance"],
-    burgundy: ["deep love", "sophistication"],
+    lavender: ["enchantment", "elegance"],
+    burgundy: ["unconscious beauty", "deep love"],
     unknown: ["uniqueness", "mystery"],
 };
+
 
 export function getColorNameFromRGB(rgb: number[]): string {
     const [r, g, b] = rgb;
