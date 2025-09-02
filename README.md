@@ -14,3 +14,6 @@ cd frontend
 npm install
 
 npm run dev
+
+If weights does not work download them in google drive:
+https://drive.google.com/drive/folders/1RbzbqkP3oGSh_BLnwpCP0pBX4jATV6dw
